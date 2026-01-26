@@ -124,6 +124,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# Directory where collectstatic will gather files for production (Render uses this).
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 # Use existing 'assets' directory as an additional static files source so
 # current PNG/PDF assets can be referenced via Django's static system.
 STATICFILES_DIRS = [
