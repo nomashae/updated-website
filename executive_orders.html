@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Orders | Nomashae</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232F2F2F%22/><text x=%2250%22 y=%2250%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2270%22 fill=%22white%22>N</text></svg>">
+
+    <style>
+        :root {
+            --bg-color: #f8f9fa; --text-color: #2F2F2F; --card-bg: #ffffff;
+            --border-color: #e9ecef;
+            --primary: #5B8C5A; /* Default */
+        }
+        body.dark-mode {
+            --bg-color: #121212; --text-color: #e0e0e0; --card-bg: #1e1e1e; --border-color: #333;
+        }
+        
+        /* Theme Classes */
+        body.theme-fire { --primary: #C53D2B; }
+        body.theme-earth { --primary: #5B8C5A; }
+        body.theme-water { --primary: #2A7A9D; }
+        body.theme-air { --primary: #A0A0A0; }
+
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-color); }
+        
+        nav { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 1rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        
+        .back-link { color: var(--text-color); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .back-link:hover { color: var(--primary); }
+        
+        .btn-icon { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: 600; }
+
+        .container { max-width: 800px; margin: 3rem auto; padding: 0 1rem; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 3rem; font-size: 2rem; }
+        
+        .decree-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .decree-title { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            margin-bottom: 1.5rem; 
+            color: var(--text-color); 
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .definition { margin-bottom: 0.8rem; line-height: 1.6; }
+        .signature { text-align: right; margin-top: 2rem; font-style: italic; color: var(--primary); font-weight: 600; }
+        
+        footer { text-align: center; margin-top: 4rem; font-size: 0.8rem; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            <span id="back-link">Back to Home</span>
+        </a>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-icon" id="theme-toggle">Dark Mode</button>
+            <button class="btn-icon" id="lang-switcher">EN</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 id="page-title">News:</h1>
+
+        <div class="decree-card">
+            <div class="decree-title" id="order-title">Press 1 - started at 24.01.2026 9:15 Standard Time - Culture, Pressident and Flags.</div>
+            <p class="definition"><strong>Adressing New Flag:</strong></p>
+            <p class="definition">In order to make the flag of <strong>DMN Nomashae</strong> modern and flowier <strong>DMN Nomashae</strong> will be changing the flag to a newer 4K resulution one. The flag will mostly stay the same but the text and the coat of arms element will be removed. <strong>DMN Nomashae</strong> will also get its own coat of arms to better represent its Citizens.</p>
+            <p class="definition"><strong>Adressing New President:</strong></p>
+            <p class="definition"><strong>DMN Nomashae</strong> has set Krste Dimov back as a president. This comes after he was fired from his job wrongfully!</p>
+            <p class="definition"><strong>Adressing Anthem:</strong></p>
+            <p class="definition">There will be an update to the anthem. The anthem will not change but rather have its own instrumental and vocal + instumental version.</p>
+            <div class="signature">
+                <p>Press 1 - finished at 24.01.2026 10:27 Stnadart Time</p>
+                Eftimij Novakovski
+            </div>
+        </div>
+
+        <div class="decree-card">
+            <div class="decree-title" id="order-title-2">Executive Order: Democratic Transition</div>
+            <p class="definition"><strong>Status Update:</strong></p>
+            <p class="definition" id="hole-def-2">After a fair and democratic vote, DMN Nomashae is now officially a Democratic MicroNation.</p>
+            <p class="definition" id="straw-def-2" style="margin-top: 1rem; opacity: 0.8; font-size: 0.9rem;">1/1 People voted. Vote closed on 30.12.2025.</p>
+            <div class="signature">Eftimij Novakovski</div>
+        </div>
+
+        <div class="decree-card">
+            <div class="decree-title" id="order-title">Straw & Hole Classification</div>
+            <p class="definition" id="hole-def"><strong>Hole:</strong> A void with a single opening.</p>
+            <p class="definition" id="tunnel-def"><strong>Tunnel:</strong> A hole connecting two openings.</p>
+            <p class="definition" id="straw-def"><strong>Straw:</strong> A tiny tunnel. Straw = Two holes connected.</p>
+            <p id="conclusion" style="margin-top: 1.5rem; font-style: italic; opacity: 0.8;">"Every straw is a tunnel, every tunnel has two holes."</p>
+            <div class="signature">Eftimij Novakovski</div>
+        </div>
+    </div>
+
+
+    <footer>
+        <p id="footer-text">&copy; 2026 Nomashae | Powered by the Elements</p>
+    </footer>
+
+    <script>
+        // Sync Theme from LocalStorage
+        const themes = ['fire', 'earth', 'water', 'air'];
+        let currentIdx = parseInt(localStorage.getItem('themeIndex') || '0');
+        document.body.classList.add('theme-' + themes[currentIdx]);
+
+        // Dark Mode Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = 'Light Mode';
+        }
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+            themeToggle.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+        });
+
+        // Translation Logic
+        const translations = {
+            en: {
+                "page-title": "Executive Orders",
+                "back-link": "Back to Home",
+                "order-title": "Straw & Hole Classification",
+                "hole-def": "<strong>Hole:</strong> A void with a single opening.",
+                "tunnel-def": "<strong>Tunnel:</strong> A hole connecting two openings.",
+                "straw-def": "<strong>Straw:</strong> A tiny tunnel. Straw = Two holes connected.",
+                "conclusion": '"Every straw is a tunnel, every tunnel has two holes."',
+                "order-title-2": "Executive Order: Democratic Transition",
+                "hole-def-2": "After a fair vote, DMN Nomashae is a Democratic MicroNation.",
+                "straw-def-2": "Vote closed on 30.12.2025.",
+                "footer-text": "&copy; 2025 Nomashae"
+            },
+            mfb: {
+                "page-title": "Exek Ord",
+                "back-link": "Bak tu Hom",
+                "order-title": "Strau & Hol Klasif",
+                "hole-def": "<strong>Hol:</strong> Voit uni op.",
+                "tunnel-def": "<strong>Tunel:</strong> Hol konex du op.",
+                "straw-def": "<strong>Strau:</strong> Min tunel. Strau = du hol konex.",
+                "conclusion": '"Al strau es tunel, al tunel hav du hol."',
+                "order-title-2": "Exek Ord: Demok Trans",
+                "hole-def-2": "Aft vot, Nomashae es Demok Mikronesh.",
+                "straw-def-2": "Vot klos 30.12.2025.",
+                "footer-text": "&copy; 2025 Nomasha"
+            }
+        };
+
+        const langSwitcher = document.getElementById('lang-switcher');
+        let currentLang = 'en';
+
+        langSwitcher.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'mfb' : 'en';
+            langSwitcher.textContent = currentLang === 'en' ? 'EN' : 'mFB';
+            for (const id in translations[currentLang]) {
+                const element = document.getElementById(id);
+                if (element) element.innerHTML = translations[currentLang][id];
+            }
+        });
+    </script>
+</body>
+</html>

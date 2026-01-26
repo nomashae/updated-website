@@ -1,0 +1,172 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Nomashae | Democratic Micronation{% endblock %}
+
+{% block extra_head %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 3rem 1rem 5rem 1rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        margin-bottom: 2rem;
+        clip-path: polygon(0 0, 100% 0, 100% 92%, 50% 100%, 0 92%);
+    }
+    .hero-flag-img {
+        width: 100%; max-width: 400px; height: auto;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        display: block; margin: 0 auto;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1rem; text-align: center; }
+    .section-title { color: var(--text-color); border-bottom: 3px solid var(--primary); display: inline-block; padding: 0 1rem 0.5rem 1rem; margin: 3rem 0 2rem 0; text-transform: uppercase; letter-spacing: 2px; font-size: 1rem; font-weight: 800; }
+    .minister-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; }
+    .minister-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; width: 240px; box-shadow: var(--shadow); transition: transform 0.2s; cursor: default; }
+    .minister-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+    .icon-box { width: 50px; height: 50px; background: var(--bg-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .icon-box svg { width: 24px; height: 24px; fill: var(--primary); }
+    .role-title { font-weight: 700; font-size: 0.8rem; color: var(--primary); display: block; text-transform: uppercase; margin-bottom: 5px; }
+    .role-name { font-size: 1.1rem; font-weight: 600; color: var(--text-color); }
+    .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+    .action-btn { display: flex; align-items: center; justify-content: center; background-color: var(--primary); color: white; padding: 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
+    .action-btn.secondary { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); }
+    .action-btn:hover { opacity: 0.8; }
+    .example-box { background: var(--bg-color); padding: 1.5rem; border-radius: 8px; margin: 1.5rem auto; max-width: 600px; border: 1px solid var(--border-color); border-top: 4px solid var(--primary); }
+    .download-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="hero">
+    <img src="{% static 'Flag_Nomashae.png' %}" alt="Flag of Nomashae" class="hero-flag-img">
+    <h1 id="site-title">Nomashae</h1>
+    <p class="motto" id="site-motto">"Four Elements - One Nomashae"</p>
+</header>
+
+<main class="container">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+        <a href="{% url 'executive_orders' %}" class="action-btn" id="nav-orders">Decrees</a>
+        <a href="{% url 'culture' %}" class="action-btn secondary" id="nav-culture">Culture</a>
+    </div>
+
+    <h2 class="section-title" id="parliament-title">Government Structure</h2>
+    <div class="minister-grid">
+        <div class="minister-card">
+            <div class="icon-box"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+            <span class="role-title" id="pm-title">Prime Minister</span>
+            <span class="role-name">Eftimij Yipified Novakovski</span>
+        </div>
+        <div class="minister-card">
+            <div class="icon-box"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+            <span class="role-title" id="pres-title">President</span>
+            <span class="role-name">Krste AppaRider Dimov</span>
+        </div>
+        <div class="minister-card">
+            <div class="icon-box"><svg viewBox="0 0 24 24"><path d="M20 6h-1v13H5v1h15v-14zm-4 8V4h-2v10l-2.5-1.5L9 14h7zM5 6h10v10H5z"/></svg></div>
+            <span class="role-title" id="affairs-title">Affairs</span>
+            <span class="role-name">Eftimij Yipified Novakovski</span>
+        </div>
+        <div class="minister-card">
+            <div class="icon-box"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-2.76-2.24-5-5-5zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></div>
+            <span class="role-title" id="culture-title">Culture</span>
+            <span class="role-name">Eftimij Yipified Novakovski</span>
+        </div>
+    </div>
+
+    <h2 class="section-title" id="language-title">Flyingo Bisdomick</h2>
+    <div class="card">
+        <p id="language-intro">The living language of Nomashae — shaped by air, motion, and balance.</p>
+        <div class="example-box">
+            <p id="language-example" style="font-family: 'Georgia', serif; font-style: italic; margin: 0; font-size: 1.1rem;">
+                "Modern day is the best day for sky surfing. Next, I had an apple and a small chocolate bar."
+            </p>
+        </div>
+        <div class="download-grid">
+            <a href="{% static 'Flyingo_Bisdomic_Complete_Guide_Nomashae.pdf' %}" class="action-btn secondary" id="pdf-link">Language Guide</a>
+            <a href="{% static 'Flying Bisonick & Flyingo Bisdomic.pdf' %}" class="action-btn secondary" id="original-link">Old Language Guide</a>
+        </div>
+    </div>
+
+    <h2 class="section-title" id="about-title">About Nomashae</h2>
+    <div class="card">
+        <p id="about-text" style="max-width: 600px; margin: 0 auto;">Founded in 2025, Nomashae is a democratic micronation inspired by the nomadic spirit and energy of Avatar: The Last Airbender.</p>
+    </div>
+
+    {% if home_cards %}
+    <h2 class="section-title">Updates</h2>
+    <div class="home-cards" style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-bottom: 2rem;">
+        {% for card in home_cards %}
+        <div class="card" style="max-width: 360px; text-align: left;">
+            <h3>{{ card.title }}</h3>
+            {% if card.subtitle %}
+                <p><strong>{{ card.subtitle }}</strong></p>
+            {% endif %}
+            <p>{{ card.body|linebreaks }}</p>
+            {% if card.button_url and card.button_text %}
+                <div style="margin-top: 1rem;">
+                    <a href="{{ card.button_url }}" class="action-btn secondary">{{ card.button_text }}</a>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const translations = {
+        en: {
+            "site-motto": '"Energy in Motion"',
+            "nav-orders": "Decrees",
+            "nav-culture": "Culture",
+            "parliament-title": "Government Structure",
+            "pm-title": "Prime Minister",
+            "pres-title": "President",
+            "affairs-title": "Affairs",
+            "culture-title": "Culture",
+            "language-title": "Flyingo Bisdomick",
+            "language-intro": "The living language of Nomashae — shaped by air, motion, and balance.",
+            "language-example": '"Modern day is the best day for sky surfing. Next, I had an apple and a small chocolate bar."',
+            "pdf-link": "Language Guide",
+            "original-link": "Original PDF",
+            "about-title": "About Nomashae",
+            "about-text": "Founded in 2025, Nomashae is a democratic micronation inspired by the nomadic spirit of Avatar: The Last Airbender.",
+            "footer-text": "&copy; 2025 Nomashae | Powered by the Elements"
+        },
+        mfb2: {
+            "site-motto": '"Fo tor un - Nomashae"',
+            "nav-orders": "Ofi Ord",
+            "nav-culture": "Kulturana",
+            "parliament-title": "Gova Struktur",
+            "pm-title": "Prim Ministra",
+            "pres-title": "Prezida",
+            "affairs-title": "Afarana",
+            "culture-title": "Kulturana",
+            "language-title": "Ultra-Modern Bisdomic",
+            "language-intro": "Dis es da liv ling ov Nomasha — evolvd ov mani agen.",
+            "language-example": '<strong>Modrn dei es da best dei for skai surf. Nex, mi had un pom an smol chok bar.</strong>',
+            "pdf-link": "Loda Gid",
+            "original-link": "Orig PDF",
+            "about-title": "Abaut Nomasha",
+            "about-text": "Fond 2025, Nomasha es un demo-nesh inspai bai nomad spirita an air-enerji.",
+            "footer-text": "&copy; 2025 Nomasha | Powrd bai da Elemen"
+        }
+    };
+
+    const langSwitcher = document.getElementById('lang-switcher');
+    let currentLang = 'en';
+
+    langSwitcher.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'mfb2' : 'en';
+        langSwitcher.textContent = currentLang === 'en' ? 'EN' : 'mFB2';
+        for (const id in translations[currentLang]) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = translations[currentLang][id];
+        }
+    });
+</script>
+{% endblock %}
