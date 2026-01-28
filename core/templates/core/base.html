@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nomashae | Democratic Micronation{% endblock %}</title>
+    <title>{% block title %}{{ tab_title|default:"Nomashae | Democratic Micronation" }}{% endblock %}</title>
+    {% if tab_icon_href %}
+    <link rel="icon" href="{{ tab_icon_href }}">
+    {% else %}
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232F2F2F%22/><text x=%2250%22 y=%2250%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2270%22 fill=%22white%22>N</text></svg>">
+    {% endif %}
     {% block extra_head %}{% endblock %}
     <style>
         :root {
@@ -37,7 +41,7 @@
         footer { text-align: center; padding: 4rem 1rem; color: var(--text-color); opacity: 0.6; font-size: 0.9rem; }
     </style>
 </head>
-<body>
+<body data-can-edit="{{ request.user.is_staff|yesno:'true,false' }}">
     <nav>
         <div class="nav-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
@@ -79,6 +83,82 @@
                 themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
             });
         }
+
+        // Hydrate any previously-edited elements from the database.
+        (function () {
+            try {
+                window.NOMASHAE_EDITABLES = JSON.parse('{{ editable_elements_json|escapejs }}');
+            } catch (e) {
+                window.NOMASHAE_EDITABLES = {};
+            }
+            const data = window.NOMASHAE_EDITABLES || {};
+            document.addEventListener('DOMContentLoaded', () => {
+                const targets = document.querySelectorAll('[data-edit-id]');
+                targets.forEach((el) => {
+                    const key = el.dataset.editId;
+                    if (key && Object.prototype.hasOwnProperty.call(data, key)) {
+                        el.innerHTML = data[key];
+                    }
+                });
+            });
+        })();
+
+        // Lightweight visual editor: staff users can toggle edit mode and
+        // click on elements marked with data-edit-id to edit and save them.
+        (function () {
+            const canEdit = document.body.dataset.canEdit === 'true';
+            if (!canEdit) return;
+
+            const navControls = document.querySelector('nav .nav-controls');
+            if (!navControls) return;
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn-icon';
+            editBtn.textContent = 'Edit Page';
+            navControls.appendChild(editBtn);
+
+            let editMode = false;
+
+            function getCsrfToken() {
+                const name = 'csrftoken=';
+                const cookies = document.cookie.split(';');
+                for (let c of cookies) {
+                    c = c.trim();
+                    if (c.startsWith(name)) return c.substring(name.length);
+                }
+                return '';
+            }
+
+            async function saveElement(el) {
+                const key = el.dataset.editId;
+                if (!key) return;
+                try {
+                    await fetch('{% url "editable_element_update" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken(),
+                        },
+                        body: JSON.stringify({ key, content: el.innerHTML }),
+                    });
+                } catch (e) {
+                    console.error('Failed to save editable element', e);
+                }
+            }
+
+            editBtn.addEventListener('click', () => {
+                editMode = !editMode;
+                editBtn.textContent = editMode ? 'Stop Editing' : 'Edit Page';
+                const targets = document.querySelectorAll('[data-edit-id]');
+                targets.forEach((el) => {
+                    el.contentEditable = editMode ? 'true' : 'false';
+                    el.style.outline = editMode ? '1px dashed var(--primary)' : '';
+                    if (editMode && !el._nomashaeEditBound) {
+                        el.addEventListener('blur', () => saveElement(el));
+                        el._nomashaeEditBound = true;
+                    }
+                });
+            });
+        })();
     </script>
 
     {% block extra_scripts %}{% endblock %}

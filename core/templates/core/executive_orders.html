@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}Executive Orders | Nomashae{% endblock %}
+{% block title %}{{ tab_title|default:"Executive Orders | Nomashae" }}{% endblock %}
 
 {% block extra_head %}
 <style>

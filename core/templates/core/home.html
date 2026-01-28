@@ -41,8 +41,8 @@
 {% block content %}
 <header class="hero">
     <img src="{% static 'Flag_Nomashae.png' %}" alt="Flag of Nomashae" class="hero-flag-img">
-    <h1 id="site-title">Nomashae</h1>
-    <p class="motto" id="site-motto">"Four Elements - One Nomashae"</p>
+    <h1 id="site-title" data-edit-id="home.site_title">Nomashae</h1>
+    <p class="motto" id="site-motto" data-edit-id="home.site_motto">"Four Elements - One Nomashae"</p>
 </header>
 
 <main class="container">
@@ -89,9 +89,9 @@
         </div>
     </div>
 
-    <h2 class="section-title" id="about-title">About Nomashae</h2>
+    <h2 class="section-title" id="about-title" data-edit-id="home.about_title">About Nomashae</h2>
     <div class="card">
-        <p id="about-text" style="max-width: 600px; margin: 0 auto;">Founded in 2025, Nomashae is a democratic micronation inspired by the nomadic spirit and energy of Avatar: The Last Airbender.</p>
+        <p id="about-text" data-edit-id="home.about_text" style="max-width: 600px; margin: 0 auto;">Founded in 2025, Nomashae is a democratic micronation inspired by the nomadic spirit and energy of Avatar: The Last Airbender.</p>
     </div>
 
     {% if home_cards %}

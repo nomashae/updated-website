@@ -47,6 +47,22 @@ class HomeCard(models.Model):
         return self.title
 
 
+class TabSettings(models.Model):
+    """Per-page tab metadata (title and icon text/colors) editable via admin."""
+
+    slug = models.SlugField(unique=True)
+    tab_title = models.CharField(max_length=100)
+    icon_text = models.CharField(max_length=2, default="N")
+    icon_bg_color = models.CharField(max_length=7, default="#2F2F2F")
+    icon_text_color = models.CharField(max_length=7, default="#FFFFFF")
+
+    class Meta:
+        ordering = ["slug"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"Tab settings for {self.slug}"
+
+
 class CitizenshipBadge(models.Model):
     username = models.CharField(max_length=50)
     origin = models.CharField(max_length=50, choices=ORIGIN_CHOICES)
@@ -63,3 +79,21 @@ class CitizenshipBadge(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover
         return f"{self.username} ({self.origin})"
+
+
+class EditableElement(models.Model):
+    """Stores editable HTML snippets keyed by an element ID.
+
+    This backs the lightweight visual editor: staff users can toggle edit mode
+    and change any element that has a matching data-edit-id in the templates.
+    """
+
+    key = models.CharField(max_length=100, unique=True)
+    content = models.TextField(blank=True)
+    description = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ["key"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return self.key
