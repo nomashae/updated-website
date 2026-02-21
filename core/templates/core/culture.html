@@ -1,0 +1,282 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Culture | Nomashae{% endblock %}
+
+{% block extra_head %}
+<style>
+    .container {
+        max-width: 700px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+        text-align: center;
+    }
+
+    h1 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+        font-style: italic;
+        opacity: 0.8;
+        margin-bottom: 3rem;
+        display: block;
+        font-family: 'Georgia', serif;
+        font-size: 1.1rem;
+    }
+
+    .lyrics-container {
+        background-color: var(--card-bg);
+        padding: 3rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-top: 5px solid var(--primary);
+    }
+
+    .verse-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--primary);
+        margin: 2rem 0 1rem 0;
+        font-weight: 800;
+        opacity: 0.9;
+    }
+
+    .lyrics-text {
+        white-space: pre-line;
+        line-height: 2.2;
+        font-family: 'Georgia', serif;
+        font-size: 1.15rem;
+        color: var(--text-color);
+    }
+
+    .chorus {
+        background: rgba(0, 0, 0, 0.03);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        border-left: 4px solid var(--primary);
+        font-style: italic;
+    }
+
+    .dark-mode .chorus {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .back-link {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+    }
+
+    .anthem-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .video-container {
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin: 0 auto;
+        text-align: center;
+        display: inline-block;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .video-container iframe {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'home' %}" class="back-link"
+        style="margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
+        <span id="back-link">Back to Home</span>
+    </a>
+    <h2 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.6;" id="page-title"
+        data-edit-id="culture.page_title">National Culture</h2>
+    <h1 id="anthem-title" data-edit-id="culture.anthem_title">“Harmony of the Four”</h1>
+    <span class="subtitle" id="anthem-subtitle" data-edit-id="culture.anthem_subtitle">National Anthem of
+        Nomashae</span>
+    <div class="lyrics-container glass">
+        <div id="anthem-body" class="lyrics-text" data-edit-id="culture.anthem_body"></div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.6;"
+        data-edit-id="culture.video_title">Video Anthems:</h2>
+    <div class="anthem-section">
+        <div class="video-container">
+            <h3 data-edit-id="culture.full_anthem_title">Full Anthem</h3>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/K-lIHZ83FQc" title="Full Anthem"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        </div>
+        <div class="video-container">
+            <h3 data-edit-id="culture.instrumental_anthem_title">Instrumental Anthem</h3>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/1AgNEMWx2Ks" title="Instrumental Anthem"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const themes = ['fire', 'earth', 'water', 'air'];
+    let currentIdx = parseInt(localStorage.getItem('themeIndex') || '0');
+    document.body.classList.add('theme-' + themes[currentIdx]);
+
+    const translations = {
+        en: {
+            "page-title": "National Culture",
+            "back-link": "Back to Home",
+            "anthem-title": "“Harmony of the Four”",
+            "anthem-subtitle": "National Anthem of Nomashae",
+            "anthem-body": `
+                <div class="verse-title">Verse I</div>
+                From mountain breath to ocean deep,
+                From steady stone to burning flame,
+                Four ancient forces wake and keep
+                Our land, our vow, our honored name.
+                In balance born, in balance strong,
+                We rise as one, though many stand,
+                Each voice a note, each step a song,
+                United heart of Nomashaen land.
+
+                <div class="chorus">
+                    <div class="verse-title">Chorus</div>
+                    Earth that holds us,
+                    Water that flows,
+                    Fire that guides us,
+                    Air that knows—
+                    Through change and time, through dark and light,
+                    The Four stand one, our path made right.
+                    In harmony we live and stand,
+                    All elements, one Nomashae.
+                </div>
+
+                <div class="verse-title">Verse II</div>
+                When storms may test our calm resolve,
+                And shadows cross the rising sun,
+                The ancient ways our doubts dissolve,
+                For none are four, yet all are one.
+                With strength of stone and mercy’s tide,
+                With fearless flame and freedom’s breath,
+                We walk the path where truths abide,
+                In life, in peace, beyond all death.
+
+                <div class="verse-title">Bridge</div>
+                No crown of power, no rule by fear,
+                But balance sworn by heart and hand,
+                The past behind, the future near,
+                Guarded by all who love this land.
+
+                <div class="verse-title">Final Chorus</div>
+                Earth, Water, Fire, Air,
+                Bound in balance, just and fair,
+                From every soul our strength is drawn,
+                A new united age is born.
+                In harmony we rise and stand,
+                All elements—one Nomashae.
+            `
+        },
+        mfb: {
+            "page-title": "Nesh Kultur",
+            "back-link": "Bak tu Hom",
+            "anthem-title": "“Pa Teka Tor”",
+            "anthem-subtitle": "Nationalna Anthema dem Nomashae",
+            "anthem-body": `
+                <div class="verse-title">Part I</div>
+                Bo breth mo mon,
+                Pa sol wa deep,
+                Tor che ru, tor flam fi,
+                Fo tor wak, tu guard pa nem.
+                Pa teka born, pa teka tor,
+                Tu ri un, tu zan stand,
+                Ev vox sil, ev step son,
+                Un tor hon Nomashae.
+
+                <div class="chorus">
+                    <div class="verse-title">Korus</div>
+                    Ru hold tu,
+                    Wa ru flow,
+                    Fi ru guid tu,
+                    Bo ru no—
+                    Tru chan ta, tru dark li,
+                    Fo tor un, pa teka ri.
+                    Pa teka liv, pa teka stand,
+                    Fo tor un — Nomashae.
+                </div>
+
+                <div class="verse-title">Part II</div>
+                Wen storm test sil tu,
+                Wen shad cross sol ri,
+                Old pa teka brek dout,
+                Fo yet un, al yet tu.
+                Ru tor stone, wa pa tide,
+                Fi no fear, bo free breth,
+                Tu wak pa tru pat,
+                Liv, pa, beyon end.
+
+                <div class="verse-title">Brij</div>
+                No kron pow, no rul fear,
+                Pa teka swor by sil an hand,
+                Past go bak, fut near,
+                Guard by al ho lov hon.
+
+                <div class="verse-title">Fin Korus</div>
+                Ru, Wa, Fi, Bo,
+                Bound pa teka, jus an so,
+                Ev sil giv tor tu,
+                Nu age un ri nu.
+                Pa teka ris, pa teka stand,
+                Fo tor un — Nomashae.
+            `
+        }
+    };
+
+    document.getElementById('anthem-body').innerHTML = translations['en']['anthem-body'];
+
+    const langSwitcher = document.getElementById('lang-switcher');
+    let currentLang = 'en';
+
+    langSwitcher.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'mfb' : 'en';
+        langSwitcher.textContent = currentLang === 'en' ? 'EN' : 'mFB';
+        const t = translations[currentLang];
+        document.getElementById('page-title').textContent = t['page-title'];
+        document.getElementById('back-link').textContent = t['back-link'];
+        document.getElementById('anthem-title').textContent = t['anthem-title'];
+        document.getElementById('anthem-subtitle').textContent = t['anthem-subtitle'];
+        document.getElementById('anthem-body').innerHTML = t['anthem-body'];
+    });
+</script>
+{% endblock %}

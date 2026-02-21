@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ tab_title|default:"Nomashae | Democratic Micronation" }}{% endblock %}</title>
+    {% if tab_icon_href %}
+    <link rel="icon" href="{{ tab_icon_href }}">
+    {% else %}
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232F2F2F%22/><text x=%2250%22 y=%2250%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2270%22 fill=%22white%22>N</text></svg>">
+    {% endif %}
+    {% block extra_head %}{% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color-1: #fdfbfb;
+            --bg-color-2: #ebedee;
+            --text-color: #2D3748;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+            --primary: #5B8C5A;
+            --secondary: #2F2F2F;
+        }
+
+        body.dark-mode {
+            --bg-color-1: #1a202c;
+            --bg-color-2: #2d3748;
+            --text-color: #f7fafc;
+            --card-bg: rgba(26, 32, 44, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        body.theme-fire {
+            --primary: #e53e3e;
+            --secondary: #9b2c2c;
+        }
+
+        body.theme-earth {
+            --primary: #38a169;
+            --secondary: #22543d;
+        }
+
+        body.theme-water {
+            --primary: #3182ce;
+            --secondary: #2a4365;
+        }
+
+        body.theme-air {
+            --primary: #a0aec0;
+            --secondary: #4a5568;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 60px;
+            background: linear-gradient(135deg, var(--bg-color-1), var(--bg-color-2));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Glassmorphism Classes */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            border-radius: 16px;
+        }
+
+        /* Nav specific glass */
+        nav {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body data-can-edit="{{ request.user.is_staff|yesno:'true,false' }}">
+    <nav>
+        <div class="nav-brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+            </svg>
+            <span>Nomashae</span>
+        </div>
+        <div class="nav-controls">
+            <button class="btn-icon" id="theme-toggle">Dark Mode</button>
+            <button class="btn-icon" id="lang-switcher">EN</button>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p id="footer-text" data-edit-id="base.footer_text">&copy; 2026 Nomashae | Powered by the Elements</p>
+    </footer>
+
+    <script>
+        function cycleTheme() {
+            const themes = ['fire', 'earth', 'water', 'air'];
+            let lastIndex = parseInt(localStorage.getItem('themeIndex') || '-1');
+            let nextIndex = (lastIndex + 1) % themes.length;
+            localStorage.setItem('themeIndex', nextIndex);
+            document.body.classList.add('theme-' + themes[nextIndex]);
+        }
+        cycleTheme();
+
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            if (themeToggle) themeToggle.textContent = 'Light Mode';
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+                themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            });
+        }
+
+        // Hydrate any previously-edited elements from the database.
+        (function () {
+            try {
+                window.NOMASHAE_EDITABLES = JSON.parse('{{ editable_elements_json|escapejs }}');
+            } catch (e) {
+                window.NOMASHAE_EDITABLES = {};
+            }
+            const data = window.NOMASHAE_EDITABLES || {};
+            document.addEventListener('DOMContentLoaded', () => {
+                const targets = document.querySelectorAll('[data-edit-id]');
+                targets.forEach((el) => {
+                    const key = el.dataset.editId;
+                    if (key && Object.prototype.hasOwnProperty.call(data, key)) {
+                        el.innerHTML = data[key];
+                    }
+                });
+            });
+        })();
+
+        // Lightweight visual editor: staff users can toggle edit mode and
+        // click on elements marked with data-edit-id to edit and save them.
+        (function () {
+            const canEdit = document.body.dataset.canEdit === 'true';
+            if (!canEdit) return;
+
+            const navControls = document.querySelector('nav .nav-controls');
+            if (!navControls) return;
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn-icon';
+            editBtn.textContent = 'Edit Page';
+            navControls.appendChild(editBtn);
+
+            let editMode = false;
+
+            function getCsrfToken() {
+                const name = 'csrftoken=';
+                const cookies = document.cookie.split(';');
+                for (let c of cookies) {
+                    c = c.trim();
+                    if (c.startsWith(name)) return c.substring(name.length);
+                }
+                return '';
+            }
+
+            async function saveElement(el) {
+                const key = el.dataset.editId;
+                if (!key) return;
+                try {
+                    await fetch('{% url "editable_element_update" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken(),
+                        },
+                        body: JSON.stringify({ key, content: el.innerHTML }),
+                    });
+                } catch (e) {
+                    console.error('Failed to save editable element', e);
+                }
+            }
+
+            editBtn.addEventListener('click', () => {
+                editMode = !editMode;
+                editBtn.textContent = editMode ? 'Stop Editing' : 'Edit Page';
+                const targets = document.querySelectorAll('[data-edit-id]');
+                targets.forEach((el) => {
+                    el.contentEditable = editMode ? 'true' : 'false';
+                    el.style.outline = editMode ? '1px dashed var(--primary)' : '';
+                    if (editMode && !el._nomashaeEditBound) {
+                        el.addEventListener('blur', () => saveElement(el));
+                        el._nomashaeEditBound = true;
+                    }
+                });
+            });
+        })();
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+
+</html>
