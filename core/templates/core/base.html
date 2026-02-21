@@ -174,6 +174,58 @@
             font-size: 0.95rem;
             font-weight: 500;
         }
+
+        .media-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .media-modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .media-item {
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+
+        .media-item:hover {
+            border-color: var(--primary);
+        }
+
+        .media-item img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            display: block;
+        }
     </style>
 </head>
 
@@ -196,6 +248,20 @@
     <footer>
         <p id="footer-text" data-edit-id="base.footer_text">&copy; 2026 Nomashae | Powered by the Elements</p>
     </footer>
+
+    {% if request.user.is_staff %}
+    <div id="media-modal" class="media-modal">
+        <div class="media-modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">Media Library</h2>
+                <button onclick="closeMediaLibrary()" class="btn-icon">Close</button>
+            </div>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Select an image to insert. Directly
+                drag-and-drop into the editor to upload new ones.</p>
+            <div id="media-grid" class="media-grid">Loading...</div>
+        </div>
+    </div>
+    {% endif %}
 
     <script>
         function cycleTheme() {
@@ -262,6 +328,41 @@
             navControls.appendChild(newPageBtn);
 
             let editMode = false;
+
+            let currentFilePickerCallback = null;
+            window.openMediaLibrary = async function (cb) {
+                currentFilePickerCallback = cb;
+                document.getElementById('media-modal').style.display = 'flex';
+                const grid = document.getElementById('media-grid');
+                grid.innerHTML = 'Loading library...';
+                try {
+                    const res = await fetch('{% url "get_media_library" %}');
+                    const data = await res.json();
+                    if (data.ok) {
+                        grid.innerHTML = '';
+                        if (data.files.length === 0) {
+                            grid.innerHTML = '<p>No library images found.</p>';
+                        }
+                        data.files.forEach(f => {
+                            const d = document.createElement('div');
+                            d.className = 'media-item';
+                            d.innerHTML = `<img src="${f.url}" alt="${f.name}" title="${f.date}">`;
+                            d.addEventListener('click', () => {
+                                currentFilePickerCallback(f.url, { alt: f.name });
+                                closeMediaLibrary();
+                            });
+                            grid.appendChild(d);
+                        });
+                    }
+                } catch (e) {
+                    grid.innerHTML = 'Error loading media library.';
+                }
+            };
+            window.closeMediaLibrary = function () {
+                const modal = document.getElementById('media-modal');
+                if (modal) modal.style.display = 'none';
+                currentFilePickerCallback = null;
+            };
 
             function getCsrfToken() {
                 const name = 'csrftoken=';
@@ -350,11 +451,17 @@
                             tinymce.init({
                                 selector: '#' + el.id,
                                 inline: true,
-                                plugins: 'image link lists media table codesample',
+                                plugins: 'image imagetools link lists media table codesample',
                                 toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image',
+                                image_advtab: true,
                                 images_upload_url: '{% url "editor_file_upload" %}',
                                 automatic_uploads: true,
                                 file_picker_types: 'image',
+                                file_picker_callback: function (callback, value, meta) {
+                                    if (meta.filetype === 'image') {
+                                        window.openMediaLibrary(callback);
+                                    }
+                                },
                                 setup: function (editor) {
                                     editor.on('blur', function () {
                                         // Save back the underlying HTML

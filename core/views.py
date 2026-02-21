@@ -47,11 +47,11 @@ def culture(request):
     return render(request, "core/culture.html", ctx)
 
 
-def executive_orders(request):
-    releases = PressRelease.objects.filter(is_published=True)
-    ctx = {"press_releases": releases}
-    ctx.update(_tab_context("news", "Executive Orders | Nomashae"))
-    return render(request, "core/executive_orders.html", ctx)
+def blog_feed(request):
+    posts = PressRelease.objects.filter(is_published=True)
+    ctx = {"posts": posts}
+    ctx.update(_tab_context("blog", "Blog | Nomashae"))
+    return render(request, "core/blog.html", ctx)
 
 
 
@@ -91,6 +91,23 @@ def create_dynamic_page(request) -> JsonResponse:
         return JsonResponse({"ok": True, "url": f"/{slug}/"})
     except Exception as e:
         return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@csrf_exempt
+@staff_member_required
+def get_media_library(request) -> JsonResponse:
+    """Returns a JSON list of all uploaded images for the Editor Media Library."""
+    media_list = EditorMedia.objects.all().order_by("-uploaded_at")
+    files = [
+        {
+            "id": m.id,
+            "url": m.file.url,
+            "name": m.file.name.split("/")[-1],
+            "date": m.uploaded_at.strftime("%Y-%m-%d")
+        }
+        for m in media_list
+    ]
+    return JsonResponse({"ok": True, "files": files})
 
 
 @csrf_exempt

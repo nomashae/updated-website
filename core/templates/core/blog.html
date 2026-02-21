@@ -1,0 +1,290 @@
+{% extends "core/base.html" %}
+{% load static markdown_extras %}
+
+{% block title %}{{ tab_title|default:"Executive Orders | Nomashae" }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .container {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+    }
+
+    h1.page-heading {
+        text-align: center;
+        color: var(--primary);
+        margin-bottom: 3.5rem;
+        font-size: 2.8rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .blog-post {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        padding: 3rem;
+        margin-bottom: 4rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        position: relative;
+    }
+
+    .blog-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+        line-height: 1.2;
+    }
+
+    .blog-meta {
+        font-size: 0.95rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .blog-content {
+        line-height: 1.9;
+        font-size: 1.15rem;
+        color: var(--text-color);
+    }
+
+    /* Tinymce injected image styling overrides */
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-content img[style*="float: left"] {
+        margin: 0.5rem 1.5rem 1rem 0;
+    }
+
+    .blog-content img[style*="float: right"] {
+        margin: 0.5rem 0 1rem 1.5rem;
+    }
+
+    .blog-footer {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        font-style: italic;
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .back-link {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+    }
+
+    .btn-action {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .btn-delete {
+        background: #e53e3e;
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <a href="{% url 'home' %}" class="back-link" style="margin-bottom: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+            <span id="back-link" data-edit-id="news.back_link">Back to Home</span>
+        </a>
+
+        {% if request.user.is_staff %}
+        <button id="btn-create-post" class="btn-action">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+            New Post
+        </button>
+        {% endif %}
+    </div>
+
+    <h1 class="page-heading" id="page-title" data-edit-id="news.page_title">The Nomashae Blog</h1>
+
+    {% for pr in posts %}
+    <div class="blog-post glass" id="post-{{ pr.id }}">
+        {% if request.user.is_staff %}
+        <div style="position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 8px;">
+            <button class="btn-action btn-delete" onclick="deletePost('{{ pr.id }}')">Delete</button>
+        </div>
+        {% endif %}
+
+        {% if pr.is_pinned %}
+        <div
+            style="color: var(--primary); font-weight: bold; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z" />
+            </svg> Pinned
+        </div>
+        {% endif %}
+
+        <h2 class="blog-title" data-edit-id="pr_{{ pr.id }}_title" data-model="PressRelease" data-model-id="{{ pr.id }}"
+            data-model-field="title">{{ pr.title }}</h2>
+
+        <div class="blog-meta">
+            {% if pr.published_at %}
+            <span>Published on <strong data-edit-id="pr_{{ pr.id }}_date" data-model="PressRelease"
+                    data-model-id="{{ pr.id }}" data-model-field="published_at">{{ pr.published_at|date:"M j, Y"
+                    }}</strong></span>
+            {% endif %}
+        </div>
+
+        {% if pr.image %}
+        <img src="{{ pr.image.url }}" alt="{{ pr.title }}"
+            style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 2rem; object-fit: cover; max-height: 500px;">
+        {% endif %}
+
+        <div class="blog-content">
+            {% if pr.header %}
+            <div data-edit-id="pr_{{ pr.id }}_header" data-model="PressRelease" data-model-id="{{ pr.id }}"
+                data-model-field="header"
+                style="font-weight: 500; font-size: 1.25rem; margin-bottom: 1.5rem; opacity: 0.9;">
+                {{ pr.header|render_markdown }}
+            </div>
+            {% endif %}
+
+            <div data-edit-id="pr_{{ pr.id }}_body" data-model="PressRelease" data-model-id="{{ pr.id }}"
+                data-model-field="body">
+                {{ pr.body|render_markdown }}
+            </div>
+        </div>
+
+        {% if pr.footer %}
+        <div class="blog-footer" data-edit-id="pr_{{ pr.id }}_footer" data-model="PressRelease"
+            data-model-id="{{ pr.id }}" data-model-field="footer">
+            {{ pr.footer|render_markdown }}
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p style="text-align: center; opacity: 0.7; font-size: 1.2rem;">No posts published yet.</p>
+    {% endfor %}
+</div>
+
+<script>
+    function getCsrfToken() {
+        const name = 'csrftoken=';
+        const cookies = document.cookie.split(';');
+        for (let c of cookies) {
+            c = c.trim();
+            if (c.startsWith(name)) return c.substring(name.length);
+        }
+        return '';
+    }
+
+    {% if request.user.is_staff %}
+    // Create new post
+    const createBtn = document.getElementById('btn-create-post');
+    if (createBtn) {
+        createBtn.addEventListener('click', async () => {
+            const title = prompt("Enter the title for the new Draft Post:");
+            if (!title) return;
+            try {
+                const res = await fetch('/api/blog/create/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                    body: JSON.stringify({ title })
+                });
+                const data = await res.json();
+                if (data.ok) location.reload(); // Reload to show the new mapped post
+                else alert(data.error);
+            } catch (e) { alert("Network error"); }
+        });
+    }
+
+    // Delete post
+    async function deletePost(id) {
+        if (!confirm("Are you sure you want to permanently delete this post?")) return;
+        try {
+            const res = await fetch('/api/blog/delete/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            if (data.ok) {
+                const postEl = document.getElementById('post-' + id);
+                if (postEl) postEl.remove();
+            } else alert(data.error);
+        } catch (e) { alert("Network error"); }
+    }
+    {% endif %}
+</script>
+<script>
+    const themes = ['fire', 'earth', 'water', 'air'];
+    let currentIdx = parseInt(localStorage.getItem('themeIndex') || '0');
+    document.body.classList.add('theme-' + themes[currentIdx]);
+
+    const translations = {
+        en: {
+            "page-title": "The Nomashae Blog",
+            "back-link": "Back to Home",
+            "footer-text": "&copy; 2026 Nomashae"
+        },
+        mfb: {
+            "page-title": "Nomashae Blog",
+            "back-link": "Bak tu Hom",
+            "footer-text": "&copy; 2026 Nomasha"
+        }
+    };
+
+    const langSwitcher = document.getElementById('lang-switcher');
+    let currentLang = 'en';
+
+    langSwitcher.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'mfb' : 'en';
+        langSwitcher.textContent = currentLang === 'en' ? 'EN' : 'mFB';
+        for (const id in translations[currentLang]) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = translations[currentLang][id];
+        }
+    });
+</script>
+{% endblock %}
