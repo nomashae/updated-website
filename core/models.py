@@ -57,6 +57,20 @@ class TabSettings(models.Model):
 
 
 
+class DynamicPage(models.Model):
+    """Dynamically generated web pages editable from the frontend."""
+    slug = models.SlugField(unique=True)
+    title = models.CharField(max_length=200)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"{self.title} (/{self.slug}/)"
+
+
 class EditableElement(models.Model):
     """Stores editable HTML snippets keyed by an element ID.
 

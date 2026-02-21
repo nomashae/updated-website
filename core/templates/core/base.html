@@ -252,6 +252,14 @@
             editBtn.textContent = 'Edit Page';
             navControls.appendChild(editBtn);
 
+            const newPageBtn = document.createElement('button');
+            newPageBtn.className = 'btn-icon';
+            newPageBtn.textContent = '+ New Page';
+            newPageBtn.style.display = 'none'; // Hidden until Edit mode
+            newPageBtn.style.borderColor = 'var(--primary)';
+            newPageBtn.style.color = 'var(--primary)';
+            navControls.appendChild(newPageBtn);
+
             let editMode = false;
 
             function getCsrfToken() {
@@ -266,7 +274,21 @@
 
             async function saveElement(el) {
                 const key = el.dataset.editId;
-                if (!key) return;
+                const model = el.dataset.model;
+                const modelId = el.dataset.modelId;
+                const modelField = el.dataset.modelField;
+
+                if (!key && !model) return;
+
+                const payload = { content: el.innerHTML };
+                if (model && modelId && modelField) {
+                    payload.model = model;
+                    payload.model_id = modelId;
+                    payload.field = modelField;
+                } else {
+                    payload.key = key;
+                }
+
                 try {
                     await fetch('{% url "editable_element_update" %}', {
                         method: 'POST',
@@ -274,16 +296,46 @@
                             'Content-Type': 'application/json',
                             'X-CSRFToken': getCsrfToken(),
                         },
-                        body: JSON.stringify({ key, content: el.innerHTML }),
+                        body: JSON.stringify(payload),
                     });
                 } catch (e) {
                     console.error('Failed to save editable element', e);
                 }
             }
 
+            newPageBtn.addEventListener('click', async () => {
+                const title = prompt("Enter the title for the new page:");
+                if (!title) return;
+                let slug = prompt("Enter a simple URL slug (e.g., 'rules', 'history', 'faq'):");
+                if (!slug) return;
+
+                // simplistic slugify
+                slug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+                try {
+                    const res = await fetch('{% url "create_dynamic_page" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken(),
+                        },
+                        body: JSON.stringify({ title, slug }),
+                    });
+                    const data = await res.json();
+                    if (data.ok) {
+                        window.location.href = data.url;
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                } catch (e) {
+                    alert("Network error occurred.");
+                }
+            });
+
             editBtn.addEventListener('click', () => {
                 editMode = !editMode;
                 editBtn.textContent = editMode ? 'Stop Editing' : 'Edit Page';
+                newPageBtn.style.display = editMode ? 'block' : 'none';
                 const targets = document.querySelectorAll('[data-edit-id]');
                 targets.forEach((el) => {
                     el.contentEditable = editMode ? 'true' : 'false';

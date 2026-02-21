@@ -9,7 +9,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image, ImageDraw, ImageFont
 
-from .models import PressRelease, HomeCard, TabSettings, EditableElement
+from .models import PressRelease, HomeCard, TabSettings, EditableElement, DynamicPage
 
 
 def _tab_context(slug: str, default_title: str) -> dict:
@@ -56,26 +56,92 @@ def executive_orders(request):
 
 
 
+def dynamic_page(request, slug):
+    """Renders a dynamically created page."""
+    page = get_object_or_404(DynamicPage, slug=slug)
+    
+    # We use a standard default context for these catch-all pages.
+    ctx = {"page": page}
+    ctx.update(_tab_context(f"page_{slug}", f"{page.title} | Nomashae"))
+    return render(request, "core/dynamic_page.html", ctx)
+
+
+@csrf_exempt
+@staff_member_required
+@require_POST
+def create_dynamic_page(request) -> JsonResponse:
+    """AJAX endpoint to create a new dynamic page."""
+    import json
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "Invalid JSON"}, status=400)
+
+    title = (payload.get("title") or "").strip()
+    slug = (payload.get("slug") or "").strip().lower()
+
+    if not title or not slug:
+        return JsonResponse({"ok": False, "error": "Missing title or slug"}, status=400)
+
+    if DynamicPage.objects.filter(slug=slug).exists():
+        return JsonResponse({"ok": False, "error": "Slug already exists"}, status=400)
+
+    try:
+        DynamicPage.objects.create(title=title, slug=slug)
+        return JsonResponse({"ok": True, "url": f"/{slug}/"})
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
 @csrf_exempt
 @staff_member_required
 @require_POST
 def editable_element_update(request) -> JsonResponse:
     """AJAX endpoint used by the visual editor to save changes.
 
-    Expects JSON body with {"key": "element-id", "content": "<p>...</p>"}.
+    Expects JSON body with either:
+      {"key": "element-id", "content": "<p>...</p>"}
+    OR for direct model updates:
+      {"model": "PressRelease", "model_id": 12, "field": "body", "content": "..."}
     """
-
     import json
+    from django.apps import apps
 
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
         return JsonResponse({"ok": False, "error": "Invalid JSON"}, status=400)
 
-    key = (payload.get("key") or "").strip()
     content = payload.get("content") or ""
+
+    # Direct model update path
+    model_name = payload.get("model")
+    model_id = payload.get("model_id")
+    field_name = payload.get("field")
+
+    if model_name and model_id and field_name:
+        try:
+            # We assume models are in the 'core' app for simplicity
+            ModelClass = apps.get_model('core', model_name)
+            obj = ModelClass.objects.get(pk=model_id)
+            
+            # Basic security check to ensure the field exists and is updatable
+            if not hasattr(obj, field_name):
+                return JsonResponse({"ok": False, "error": f"Field '{field_name}' not found on {model_name}"}, status=400)
+            
+            setattr(obj, field_name, content)
+            obj.save()
+            return JsonResponse({"ok": True, "type": "model_update"})
+        
+        except LookupError:
+            return JsonResponse({"ok": False, "error": f"Model '{model_name}' not found"}, status=400)
+        except Exception as e:
+            return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+    # Standard EditableElement path
+    key = (payload.get("key") or "").strip()
     if not key:
-        return JsonResponse({"ok": False, "error": "Missing key"}, status=400)
+        return JsonResponse({"ok": False, "error": "Missing key or model details"}, status=400)
 
     obj, _created = EditableElement.objects.update_or_create(
         key=key,

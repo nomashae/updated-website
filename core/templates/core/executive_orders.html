@@ -96,17 +96,21 @@
             </svg> Pinned
         </div>
         {% endif %}
-        <div class="decree-title">{{ pr.title }}</div>
+        <div class="decree-title" data-edit-id="pr_{{ pr.id }}_title" data-model="PressRelease"
+            data-model-id="{{ pr.id }}" data-model-field="title">{{ pr.title }}</div>
         {% if pr.image %}
         <img src="{{ pr.image.url }}" alt="{{ pr.title }}"
             style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; object-fit: cover; max-height: 400px;">
         {% endif %}
         {% if pr.header %}
-        <div class="definition" style="font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem;">
+        <div class="definition" data-edit-id="pr_{{ pr.id }}_header" data-model="PressRelease"
+            data-model-id="{{ pr.id }}" data-model-field="header"
+            style="font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem;">
             {{ pr.header|render_markdown }}
         </div>
         {% endif %}
-        <div class="definition" style="margin-bottom: 1rem;">
+        <div class="definition" data-edit-id="pr_{{ pr.id }}_body" data-model="PressRelease" data-model-id="{{ pr.id }}"
+            data-model-field="body" style="margin-bottom: 1rem;">
             {{ pr.body|render_markdown }}
         </div>
         <div class="signature">
@@ -114,7 +118,8 @@
             <p>{{ pr.published_at|date:"d.m.Y H:i" }}</p>
             {% endif %}
             {% if pr.footer %}
-            <div style="margin-top: 0.5rem;">
+            <div data-edit-id="pr_{{ pr.id }}_footer" data-model="PressRelease" data-model-id="{{ pr.id }}"
+                data-model-field="footer" style="margin-top: 0.5rem;">
                 {{ pr.footer|render_markdown }}
             </div>
             {% endif %}
