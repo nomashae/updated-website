@@ -9,7 +9,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image, ImageDraw, ImageFont
 
-from .models import PressRelease, HomeCard, TabSettings, EditableElement, DynamicPage
+from .models import PressRelease, HomeCard, TabSettings, EditableElement, DynamicPage, EditorMedia
 
 
 def _tab_context(slug: str, default_title: str) -> dict:
@@ -91,6 +91,23 @@ def create_dynamic_page(request) -> JsonResponse:
         return JsonResponse({"ok": True, "url": f"/{slug}/"})
     except Exception as e:
         return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@csrf_exempt
+@staff_member_required
+@require_POST
+def editor_file_upload(request) -> JsonResponse:
+    """Endpoint for TinyMCE to upload inline images."""
+    if 'file' not in request.FILES:
+        return JsonResponse({"error": "No file uploaded"}, status=400)
+    
+    upload = request.FILES['file']
+    try:
+        media = EditorMedia.objects.create(file=upload)
+        # TinyMCE expects a JSON response with a "location" key pointing to the image URL
+        return JsonResponse({"location": media.file.url})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @csrf_exempt

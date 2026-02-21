@@ -15,9 +15,10 @@
     {% block extra_head %}{% endblock %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" <script
+        src="https://cdn.tailwindcss.com">
+    </script>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -336,15 +337,57 @@
                 editMode = !editMode;
                 editBtn.textContent = editMode ? 'Stop Editing' : 'Edit Page';
                 newPageBtn.style.display = editMode ? 'block' : 'none';
+
                 const targets = document.querySelectorAll('[data-edit-id]');
-                targets.forEach((el) => {
-                    el.contentEditable = editMode ? 'true' : 'false';
-                    el.style.outline = editMode ? '1px dashed var(--primary)' : '';
-                    if (editMode && !el._nomashaeEditBound) {
-                        el.addEventListener('blur', () => saveElement(el));
-                        el._nomashaeEditBound = true;
-                    }
-                });
+
+                if (editMode) {
+                    targets.forEach((el) => {
+                        const model = el.dataset.model;
+
+                        // If it's a Django Model-backed element (like a Decree), use TinyMCE
+                        if (model) {
+                            el.id = el.id || 'tinymce-' + Math.random().toString(36).substr(2, 9);
+                            tinymce.init({
+                                selector: '#' + el.id,
+                                inline: true,
+                                plugins: 'image link lists media table codesample',
+                                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image',
+                                images_upload_url: '{% url "editor_file_upload" %}',
+                                automatic_uploads: true,
+                                file_picker_types: 'image',
+                                setup: function (editor) {
+                                    editor.on('blur', function () {
+                                        // Save back the underlying HTML
+                                        el.innerHTML = editor.getContent();
+                                        saveElement(el);
+                                    });
+                                }
+                            });
+                        } else {
+                            // Standard lightweight edits (like tiny layout pieces)
+                            el.contentEditable = 'true';
+                            el.style.outline = '1px dashed var(--primary)';
+                            if (!el._nomashaeEditBound) {
+                                el.addEventListener('blur', () => saveElement(el));
+                                el._nomashaeEditBound = true;
+                            }
+                        }
+                    });
+                } else {
+                    // Turn off edit mode
+                    targets.forEach((el) => {
+                        if (el.dataset.model) {
+                            if (tinymce.get(el.id)) {
+                                el.innerHTML = tinymce.get(el.id).getContent();
+                                saveElement(el);
+                                tinymce.get(el.id).remove();
+                            }
+                        } else {
+                            el.contentEditable = 'false';
+                            el.style.outline = '';
+                        }
+                    });
+                }
             });
         })();
     </script>

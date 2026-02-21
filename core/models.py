@@ -71,6 +71,18 @@ class DynamicPage(models.Model):
         return f"{self.title} (/{self.slug}/)"
 
 
+class EditorMedia(models.Model):
+    """Stores files inline-uploaded via the rich text editor."""
+    file = models.FileField(upload_to="editor_uploads/")
+    uploaded_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return self.file.name
+
+
 class EditableElement(models.Model):
     """Stores editable HTML snippets keyed by an element ID.
 
