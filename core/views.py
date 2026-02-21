@@ -130,6 +130,51 @@ def editor_file_upload(request) -> JsonResponse:
 @csrf_exempt
 @staff_member_required
 @require_POST
+def api_blog_create(request) -> JsonResponse:
+    """AJAX endpoint to create a new empty blog post (PressRelease)."""
+    import json
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "Invalid JSON"}, status=400)
+
+    title = (payload.get("title") or "Untitled Post").strip()
+    
+    try:
+        PressRelease.objects.create(title=title, is_published=True)
+        return JsonResponse({"ok": True})
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@csrf_exempt
+@staff_member_required
+@require_POST
+def api_blog_delete(request) -> JsonResponse:
+    """AJAX endpoint to delete a blog post."""
+    import json
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "Invalid JSON"}, status=400)
+
+    post_id = payload.get("id")
+    if not post_id:
+        return JsonResponse({"ok": False, "error": "Missing ID"}, status=400)
+    
+    try:
+        post = PressRelease.objects.get(pk=post_id)
+        post.delete()
+        return JsonResponse({"ok": True})
+    except PressRelease.DoesNotExist:
+        return JsonResponse({"ok": False, "error": "Post not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@csrf_exempt
+@staff_member_required
+@require_POST
 def editable_element_update(request) -> JsonResponse:
     """AJAX endpoint used by the visual editor to save changes.
 
